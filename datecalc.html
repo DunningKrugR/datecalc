@@ -282,6 +282,7 @@
             <div class="result-number" id="resultNumber" onclick="copyDaysToClipboard()" title="Click to copy">0</div>
             <div class="result-label" id="resultLabel">days</div>
             <div class="button-group secondary">
+                <button class="secondary" onclick="reduceBy50Percent()">Reduce by 50%</button>
                 <button class="secondary" onclick="reduceBy75Percent()">Reduce by 75%</button>
             </div>
             <div class="result-date" id="resultDate">
@@ -426,6 +427,27 @@
             resultNumber.textContent = Math.abs(daysDiff);
             resultLabel.textContent = daysDiff >= 0 ? 'days later' : 'days earlier';
             result.classList.add('show');
+        }
+
+        function reduceBy50Percent() {
+            if (lastDate1 === null || lastDate2 === null) {
+                alert('Please calculate the difference first');
+                return;
+            }
+
+            // Reduce by 50% means keep 50% of the difference
+            const reducedDays = Math.floor(lastDaysDiff * 0.5);
+            
+            // Calculate the resulting date by adding reduced days to start date
+            const resultingDate = new Date(lastDate1);
+            resultingDate.setDate(resultingDate.getDate() + reducedDays);
+
+            // Format in the same format as the start date
+            const formattedDate = formatDateInSameFormat(resultingDate, lastDate1Format, document.getElementById('date1').value);
+
+            // Display the result
+            document.getElementById('resultDateValue').textContent = formattedDate;
+            document.getElementById('resultDate').classList.add('show');
         }
 
         function reduceBy75Percent() {
