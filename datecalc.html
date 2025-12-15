@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date Difference Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #1A1B1C;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: #FFFFFF;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #1A1B1C;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 28px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #505050;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input[type="date"],
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #505050;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #1A1B1C;
+            background: #FFFFFF;
+            transition: border-color 0.3s;
+        }
+
+        input[type="date"]:focus,
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #08F0A1;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .button-group.secondary {
+            margin-top: 15px;
+        }
+
+        button.secondary {
+            background: #08F0A1;
+            color: #1A1B1C;
+        }
+
+        button.secondary:hover {
+            background: #06D08F;
+            box-shadow: 0 5px 15px rgba(8, 240, 161, 0.4);
+        }
+
+        button {
+            flex: 1;
+            padding: 14px;
+            background: #08F0A1;
+            color: #1A1B1C;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(8, 240, 161, 0.4);
+            background: #06D08F;
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: #1A1B1C;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-number {
+            font-size: 48px;
+            font-weight: bold;
+            color: #08F0A1;
+            margin: 10px 0;
+            cursor: pointer;
+            user-select: all;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background-color 0.2s, transform 0.2s;
+            display: inline-block;
+        }
+
+        .result-number:hover {
+            background-color: rgba(8, 240, 161, 0.1);
+            transform: scale(1.05);
+        }
+
+        .result-number:active {
+            background-color: rgba(8, 240, 161, 0.2);
+            transform: scale(1.02);
+        }
+
+        .result-label {
+            color: #FFFFFF;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .result-date {
+            margin-top: 20px;
+            padding: 15px;
+            background: #505050;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            word-break: break-all;
+            color: #08F0A1;
+            display: none;
+        }
+
+        .result-date.show {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        .result-date-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            color: #FFFFFF;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        #resultDateValue {
+            cursor: pointer;
+            user-select: all;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        #resultDateValue:hover {
+            background-color: rgba(8, 240, 161, 0.2);
+        }
+
+        #resultDateValue:active {
+            background-color: rgba(8, 240, 161, 0.3);
+        }
+
+        .copy-toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #08F0A1;
+            color: #1A1B1C;
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .copy-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .error {
+            color: #08F0A1;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .info {
+            margin-top: 20px;
+            padding: 15px;
+            background: #505050;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #FFFFFF;
+        }
+
+        .info strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📅 Date Difference Calculator</h1>
+        
+        <div class="input-group">
+            <label for="date1">Start Date (ISO Format)</label>
+            <input type="text" id="date1" placeholder="2025-12-09T15:35:22.225Z or YYYY-MM-DD">
+            <div class="error" id="error1"></div>
+        </div>
+
+        <div class="input-group">
+            <label for="date2">End Date (ISO Format)</label>
+            <input type="text" id="date2" placeholder="2025-12-09T15:35:22.225Z or YYYY-MM-DD">
+            <div class="error" id="error2"></div>
+        </div>
+
+        <div class="button-group">
+            <button onclick="calculateDifference()">Calculate Days</button>
+            <button onclick="clearAll()">Clear</button>
+        </div>
+
+        <div class="result" id="result">
+            <div class="result-label">Difference (click to copy)</div>
+            <div class="result-number" id="resultNumber" onclick="copyDaysToClipboard()" title="Click to copy">0</div>
+            <div class="result-label" id="resultLabel">days</div>
+            <div class="button-group secondary">
+                <button class="secondary" onclick="reduceBy75Percent()">Reduce by 75%</button>
+            </div>
+            <div class="result-date" id="resultDate">
+                <div class="result-date-label">Resulting Date (click to copy)</div>
+                <div id="resultDateValue" onclick="copyDateToClipboard()" title="Click to copy"></div>
+            </div>
+        </div>
+
+        <div class="copy-toast" id="copyToast">✓ Copied to clipboard!</div>
+
+        <div class="info">
+            <strong>💡 Tip:</strong>
+            You can paste ISO date strings in either format: YYYY-MM-DD or full ISO datetime like 2025-12-09T15:35:22.225Z
+        </div>
+    </div>
+
+    <script>
+        // Store last calculation data
+        let lastDate1 = null;
+        let lastDate2 = null;
+        let lastDate1Format = null;
+        let lastDate2Format = null;
+        let lastDaysDiff = 0;
+
+        function parseISODate(dateString) {
+            // Try to parse ISO date string
+            if (!dateString) return null;
+            
+            // Remove any whitespace
+            dateString = dateString.trim();
+            
+            // Try parsing as ISO date (handles both YYYY-MM-DD and full ISO datetime)
+            const date = new Date(dateString);
+            
+            // Check if date is valid
+            if (isNaN(date.getTime())) {
+                return null;
+            }
+            
+            // Verify it's a valid ISO format (YYYY-MM-DD or full ISO datetime)
+            // Matches: YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss.sssZ or variations
+            const isoRegex = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d{1,3})?Z?)?/;
+            if (!isoRegex.test(dateString)) {
+                return null;
+            }
+            
+            return date;
+        }
+
+        function detectDateFormat(dateString) {
+            // Detect if it's a full ISO datetime or just date
+            if (dateString.includes('T')) {
+                // Full ISO datetime - preserve the format
+                if (dateString.endsWith('Z')) {
+                    return 'full-iso-z';
+                } else if (dateString.includes('.')) {
+                    return 'full-iso-ms';
+                } else {
+                    return 'full-iso';
+                }
+            } else {
+                return 'date-only';
+            }
+        }
+
+        function formatDateInSameFormat(date, originalFormat, originalString) {
+            if (originalFormat === 'date-only') {
+                // Return YYYY-MM-DD
+                return date.toISOString().split('T')[0];
+            } else if (originalFormat === 'full-iso-z') {
+                // Return YYYY-MM-DDTHH:mm:ss.sssZ
+                return date.toISOString();
+            } else if (originalFormat === 'full-iso-ms') {
+                // Return YYYY-MM-DDTHH:mm:ss.sss (no Z)
+                return date.toISOString().replace('Z', '');
+            } else {
+                // Return YYYY-MM-DDTHH:mm:ss (no milliseconds, no Z)
+                return date.toISOString().split('.')[0];
+            }
+        }
+
+        function calculateDifference() {
+            const date1Input = document.getElementById('date1');
+            const date2Input = document.getElementById('date2');
+            const error1 = document.getElementById('error1');
+            const error2 = document.getElementById('error2');
+            const result = document.getElementById('result');
+            const resultNumber = document.getElementById('resultNumber');
+            const resultLabel = document.getElementById('resultLabel');
+
+            // Clear previous errors
+            error1.classList.remove('show');
+            error2.classList.remove('show');
+            error1.textContent = '';
+            error2.textContent = '';
+
+            const date1Value = date1Input.value;
+            const date2Value = date2Input.value;
+
+            if (!date1Value) {
+                error1.textContent = 'Please enter a start date';
+                error1.classList.add('show');
+                return;
+            }
+
+            if (!date2Value) {
+                error2.textContent = 'Please enter an end date';
+                error2.classList.add('show');
+                return;
+            }
+
+            const date1 = parseISODate(date1Value);
+            const date2 = parseISODate(date2Value);
+
+            if (!date1) {
+                error1.textContent = 'Invalid ISO date format. Use YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss.sssZ';
+                error1.classList.add('show');
+                return;
+            }
+
+            if (!date2) {
+                error2.textContent = 'Invalid ISO date format. Use YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss.sssZ';
+                error2.classList.add('show');
+                return;
+            }
+
+            // Calculate difference in days
+            const timeDiff = date2.getTime() - date1.getTime();
+            const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+
+            // Store for reduce by 75% function
+            lastDate1 = date1;
+            lastDate2 = date2;
+            lastDate1Format = detectDateFormat(date1Value);
+            lastDate2Format = detectDateFormat(date2Value);
+            lastDaysDiff = daysDiff;
+
+            // Hide result date section
+            document.getElementById('resultDate').classList.remove('show');
+
+            // Display result
+            resultNumber.textContent = Math.abs(daysDiff);
+            resultLabel.textContent = daysDiff >= 0 ? 'days later' : 'days earlier';
+            result.classList.add('show');
+        }
+
+        function reduceBy75Percent() {
+            if (lastDate1 === null || lastDate2 === null) {
+                alert('Please calculate the difference first');
+                return;
+            }
+
+            // Reduce by 75% means keep 25% of the difference
+            const reducedDays = Math.floor(lastDaysDiff * 0.25);
+            
+            // Calculate the resulting date by adding reduced days to start date
+            const resultingDate = new Date(lastDate1);
+            resultingDate.setDate(resultingDate.getDate() + reducedDays);
+
+            // Format in the same format as the start date
+            const formattedDate = formatDateInSameFormat(resultingDate, lastDate1Format, document.getElementById('date1').value);
+
+            // Display the result
+            document.getElementById('resultDateValue').textContent = formattedDate;
+            document.getElementById('resultDate').classList.add('show');
+        }
+
+        function copyDaysToClipboard() {
+            const daysValue = document.getElementById('resultNumber').textContent;
+            
+            if (!daysValue || daysValue === '0') {
+                return;
+            }
+
+            // Use the Clipboard API if available
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(daysValue).then(() => {
+                    showCopyToast();
+                }).catch(() => {
+                    // Fallback if clipboard API fails
+                    fallbackCopyToClipboard(daysValue);
+                });
+            } else {
+                // Fallback for older browsers
+                fallbackCopyToClipboard(daysValue);
+            }
+        }
+
+        function copyDateToClipboard() {
+            const dateValue = document.getElementById('resultDateValue').textContent;
+            
+            if (!dateValue) {
+                return;
+            }
+
+            // Use the Clipboard API if available
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(dateValue).then(() => {
+                    showCopyToast();
+                }).catch(() => {
+                    // Fallback if clipboard API fails
+                    fallbackCopyToClipboard(dateValue);
+                });
+            } else {
+                // Fallback for older browsers
+                fallbackCopyToClipboard(dateValue);
+            }
+        }
+
+        function fallbackCopyToClipboard(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                showCopyToast();
+            } catch (err) {
+                console.error('Failed to copy:', err);
+            }
+            
+            document.body.removeChild(textArea);
+        }
+
+        function showCopyToast() {
+            const toast = document.getElementById('copyToast');
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        function clearAll() {
+            document.getElementById('date1').value = '';
+            document.getElementById('date2').value = '';
+            document.getElementById('error1').classList.remove('show');
+            document.getElementById('error2').classList.remove('show');
+            document.getElementById('result').classList.remove('show');
+            document.getElementById('resultDate').classList.remove('show');
+            
+            // Reset stored values
+            lastDate1 = null;
+            lastDate2 = null;
+            lastDate1Format = null;
+            lastDate2Format = null;
+            lastDaysDiff = 0;
+        }
+
+        // Allow Enter key to calculate
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                calculateDifference();
+            }
+        });
+
+    </script>
+</body>
+</html>
+
