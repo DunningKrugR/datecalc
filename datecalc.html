@@ -284,6 +284,7 @@
             <div class="button-group secondary">
                 <button class="secondary" onclick="reduceBy50Percent()">Reduce by 50%</button>
                 <button class="secondary" onclick="reduceBy75Percent()">Reduce by 75%</button>
+                <button class="secondary" onclick="add7DaysToToday()">Today + 7 Days</button>
             </div>
             <div class="result-date" id="resultDate">
                 <div class="result-date-label">Resulting Date (click to copy)</div>
@@ -466,6 +467,22 @@
             // Format in the same format as the start date
             const formattedDate = formatDateInSameFormat(resultingDate, lastDate1Format, document.getElementById('date1').value);
 
+            // Display the result
+            document.getElementById('resultDateValue').textContent = formattedDate;
+            document.getElementById('resultDate').classList.add('show');
+        }
+
+        function add7DaysToToday() {
+            // Get today's date
+            const today = new Date();
+            
+            // Add 7 days
+            const futureDate = new Date(today);
+            futureDate.setDate(futureDate.getDate() + 7);
+            
+            // Format as full ISO datetime with Z (e.g., 2025-12-09T15:35:22.225Z)
+            const formattedDate = futureDate.toISOString();
+            
             // Display the result
             document.getElementById('resultDateValue').textContent = formattedDate;
             document.getElementById('resultDate').classList.add('show');
