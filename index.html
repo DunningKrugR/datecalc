@@ -261,6 +261,12 @@
         <h1>📅 Date Difference Calculator</h1>
         
         <div class="input-group">
+            <label for="bothDates">Both Dates (Tab-separated, optional)</label>
+            <input type="text" id="bothDates" placeholder="2025-12-25T16:37:35.679Z	2027-06-28T16:37:35.679Z" oninput="parseBothDates()">
+            <div class="error" id="errorBoth"></div>
+        </div>
+
+        <div class="input-group">
             <label for="date1">Start Date (ISO Format)</label>
             <input type="text" id="date1" placeholder="2025-12-09T15:35:22.225Z or YYYY-MM-DD">
             <div class="error" id="error1"></div>
@@ -296,7 +302,7 @@
 
         <div class="info">
             <strong>💡 Tip:</strong>
-            You can paste ISO date strings in either format: YYYY-MM-DD or full ISO datetime like 2025-12-09T15:35:22.225Z
+            You can paste ISO date strings in either format: YYYY-MM-DD or full ISO datetime like 2025-12-09T15:35:22.225Z. Or use the "Both Dates" field to paste two tab-separated dates at once.
         </div>
     </div>
 
@@ -307,6 +313,70 @@
         let lastDate1Format = null;
         let lastDate2Format = null;
         let lastDaysDiff = 0;
+
+        function parseBothDates() {
+            const bothDatesInput = document.getElementById('bothDates');
+            const errorBoth = document.getElementById('errorBoth');
+            const date1Input = document.getElementById('date1');
+            const date2Input = document.getElementById('date2');
+            
+            const inputValue = bothDatesInput.value.trim();
+            
+            // Clear previous error
+            errorBoth.classList.remove('show');
+            errorBoth.textContent = '';
+            
+            if (!inputValue) {
+                // Clear the individual fields if both dates field is empty
+                date1Input.value = '';
+                date2Input.value = '';
+                return;
+            }
+            
+            // Split by tab first, then by whitespace if no tab found
+            let dates = inputValue.split('\t');
+            if (dates.length === 1) {
+                // Try splitting by multiple spaces or other whitespace
+                dates = inputValue.split(/\s{2,}/);
+            }
+            if (dates.length === 1) {
+                // Try splitting by single space as last resort
+                dates = inputValue.split(/\s+/);
+            }
+            
+            if (dates.length < 2) {
+                errorBoth.textContent = 'Please provide two dates separated by a tab or space';
+                errorBoth.classList.add('show');
+                return;
+            }
+            
+            const date1Str = dates[0].trim();
+            const date2Str = dates[1].trim();
+            
+            // Validate and parse the dates
+            const date1 = parseISODate(date1Str);
+            const date2 = parseISODate(date2Str);
+            
+            if (!date1) {
+                errorBoth.textContent = 'Invalid first date format';
+                errorBoth.classList.add('show');
+                return;
+            }
+            
+            if (!date2) {
+                errorBoth.textContent = 'Invalid second date format';
+                errorBoth.classList.add('show');
+                return;
+            }
+            
+            // Populate the individual date fields
+            date1Input.value = date1Str;
+            date2Input.value = date2Str;
+            
+            // Clear any errors from individual fields
+            document.getElementById('error1').classList.remove('show');
+            document.getElementById('error2').classList.remove('show');
+        }
 
         function parseISODate(dateString) {
             // Try to parse ISO date string
@@ -560,8 +630,10 @@
         }
 
         function clearAll() {
+            document.getElementById('bothDates').value = '';
             document.getElementById('date1').value = '';
             document.getElementById('date2').value = '';
+            document.getElementById('errorBoth').classList.remove('show');
             document.getElementById('error1').classList.remove('show');
             document.getElementById('error2').classList.remove('show');
             document.getElementById('result').classList.remove('show');
